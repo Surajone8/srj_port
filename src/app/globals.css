@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0d0f14;
+  --background: #000000;
   --foreground: #f8fafc;
-  --canvas-grid: #181c26;
+  --canvas-grid: #11141d;
 }
 
 @theme inline {
@@ -16,18 +16,38 @@
 html {
   scroll-behavior: smooth;
   color-scheme: dark;
+  background-color: #000000;
 }
 
 body {
-  background-color: var(--background);
+  background-color: #000000;
   color: var(--foreground);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
 }
 
+/* Hollow stroked display typography */
+.text-stroke-white {
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.85);
+  color: transparent;
+}
+
+.text-stroke-subtle {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
+  color: transparent;
+}
+
+/* Frosted glass overlay */
+.glass-panel {
+  background: rgba(14, 16, 22, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 /* Figma-style infinite dot grid background pattern */
 .figma-canvas-grid {
-  background-color: #0d0f14;
+  background-color: #000000;
   background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
   background-size: 24px 24px;
 }
