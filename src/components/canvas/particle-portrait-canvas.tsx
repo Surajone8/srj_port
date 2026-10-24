@@ -13,6 +13,7 @@ interface Particle {
   radius: number;
   baseRadius: number;
   alpha: number;
+  baseAlpha: number;
   noiseOffset: number;
 }
 
@@ -28,17 +29,40 @@ export function ParticlePortraitCanvas({
   imageSrc = "/images/portrait.jpg",
   className = "",
   pointSpacing = 7,
-  mouseRadius = 120,
-  pushStrength = 8,
+  mouseRadius = 140,
+  pushStrength = 12,
 }: ParticlePortraitCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const particlesRef = useRef<Particle[]>([]);
-  const mouseRef = useRef<{ x: number; y: number; active: boolean }>({
+  const shockwavesRef = useRef<{ x: number; y: number; radius: number; maxRadius: number; strength: number }[]>([]);
+
+  // Mouse & velocity tracking
+  const mouseRef = useRef<{
+    x: number;
+    y: number;
+    prevX: number;
+    prevY: number;
+    vx: number;
+    vy: number;
+    active: boolean;
+  }>({
     x: -9999,
     y: -9999,
+    prevX: -9999,
+    prevY: -9999,
+    vx: 0,
+    vy: 0,
     active: false,
   });
+
+  const tiltRef = useRef<{ currentX: number; currentY: number; targetX: number; targetY: number }>({
+    currentX: 0,
+    currentY: 0,
+    targetX: 0,
+    targetY: 0,
+  });
+
   const animationFrameId = useRef<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -52,7 +76,7 @@ export function ParticlePortraitCanvas({
       offscreen.width = width;
       offscreen.height = height;
 
-      // Calculate aspect ratio fit (contain/cover)
+      // Calculate aspect ratio fit (contain)
       const imgAspect = img.naturalWidth / img.naturalHeight;
       const canvasAspect = width / height;
 
@@ -97,7 +121,7 @@ export function ParticlePortraitCanvas({
             if (luminance > 0.12) {
               // Right half vs left half halftone nuance (Axevia effect)
               const isRightSide = x > width * 0.48;
-              const sizeMultiplier = isRightSide ? 1.25 : 0.9;
+              const sizeMultiplier = isRightSide ? 1.3 : 0.85;
 
               // Size circle based on brightness
               const baseRadius = Math.max(
@@ -105,19 +129,20 @@ export function ParticlePortraitCanvas({
                 luminance * (pointSpacing * 0.48) * sizeMultiplier
               );
 
-              // Organic alpha
-              const alpha = Math.min(1.0, 0.25 + luminance * 0.75);
+              // Base alpha
+              const baseAlpha = Math.min(1.0, 0.25 + luminance * 0.75);
 
               particles.push({
                 originX: x,
                 originY: y,
-                x: x + (Math.random() - 0.5) * 4,
-                y: y + (Math.random() - 0.5) * 4,
+                x: x + (Math.random() - 0.5) * 3,
+                y: y + (Math.random() - 0.5) * 3,
                 vx: 0,
                 vy: 0,
                 radius: baseRadius,
                 baseRadius,
-                alpha,
+                alpha: baseAlpha,
+                baseAlpha,
                 noiseOffset: Math.random() * Math.PI * 2,
               });
             }
@@ -146,7 +171,6 @@ export function ParticlePortraitCanvas({
           const dy = (y - centerY) / headRadiusY;
           const distHead = dx * dx + dy * dy;
 
-          // Torso ellipse
           const dxTorso = (x - centerX) / (headRadiusX * 1.8);
           const dyTorso = (y - (centerY + headRadiusY * 1.5)) / (headRadiusY * 1.2);
           const distTorso = dxTorso * dxTorso + dyTorso * dyTorso;
@@ -155,10 +179,10 @@ export function ParticlePortraitCanvas({
           const inTorso = distTorso <= 1.0 && y > centerY + headRadiusY * 0.7;
 
           if (inHead || inTorso) {
-            // Simulated split light: right side is bright, left side is stippled
             const isRightSide = x > centerX;
             const luminance = isRightSide ? 0.7 + Math.random() * 0.3 : 0.25 + Math.random() * 0.3;
             const baseRadius = Math.max(0.8, luminance * (pointSpacing * 0.45));
+            const baseAlpha = isRightSide ? 0.9 : 0.45;
 
             particles.push({
               originX: x,
@@ -169,7 +193,8 @@ export function ParticlePortraitCanvas({
               vy: 0,
               radius: baseRadius,
               baseRadius,
-              alpha: isRightSide ? 0.9 : 0.45,
+              alpha: baseAlpha,
+              baseAlpha,
               noiseOffset: Math.random() * Math.PI * 2,
             });
           }
@@ -202,7 +227,6 @@ export function ParticlePortraitCanvas({
       ctx.scale(dpr, dpr);
     }
 
-    // Load reference image
     if (imageSrc) {
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -227,7 +251,8 @@ export function ParticlePortraitCanvas({
   // Main interactive physics render loop
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -242,38 +267,90 @@ export function ParticlePortraitCanvas({
       const width = canvas.width / (window.devicePixelRatio || 1);
       const height = canvas.height / (window.devicePixelRatio || 1);
 
+      // Smooth 3D Parallax Tilt update (Lerp)
+      const tilt = tiltRef.current;
+      tilt.currentX += (tilt.targetX - tilt.currentX) * 0.06;
+      tilt.currentY += (tilt.targetY - tilt.currentY) * 0.06;
+      container.style.transform = `perspective(1200px) rotateX(${tilt.currentY}deg) rotateY(${tilt.currentX}deg)`;
+
       // Clear with pitch dark background
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, width, height);
 
       const particles = particlesRef.current;
       const mouse = mouseRef.current;
-      const k = 0.07; // Spring stiffness
-      const friction = 0.88; // Damping
+      const shockwaves = shockwavesRef.current;
+
+      const k = 0.075; // Spring stiffness
+      const friction = 0.86; // Damping
+
+      // Expand and prune shockwaves
+      for (let s = shockwaves.length - 1; s >= 0; s--) {
+        const sw = shockwaves[s];
+        sw.radius += 8;
+        sw.strength *= 0.94;
+        if (sw.radius > sw.maxRadius || sw.strength < 0.05) {
+          shockwaves.splice(s, 1);
+        }
+      }
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
         if (!prefersReducedMotion) {
-          // 1. Mouse repulsion physics
+          // 1. Mouse magnetic dispersion & velocity push
           if (mouse.active) {
             const dx = p.x - mouse.x;
             const dy = p.y - mouse.y;
             const dist = Math.hypot(dx, dy);
 
             if (dist < mouseRadius && dist > 0) {
-              const force = (1 - dist / mouseRadius) * pushStrength;
+              // Proximity ratio (1 at cursor center, 0 at outer boundary)
+              const proximity = 1 - dist / mouseRadius;
               const angle = Math.atan2(dy, dx);
-              p.vx += Math.cos(angle) * force * 1.2;
-              p.vy += Math.sin(angle) * force * 1.2;
+
+              // Combined radial force + mouse velocity wake
+              const radialPush = proximity * pushStrength;
+              const velocityPushX = mouse.vx * proximity * 0.35;
+              const velocityPushY = mouse.vy * proximity * 0.35;
+
+              p.vx += Math.cos(angle) * radialPush + velocityPushX;
+              p.vy += Math.sin(angle) * radialPush + velocityPushY;
+
+              // Proximity spotlight: expand size & boost alpha
+              p.radius = p.baseRadius * (1 + proximity * 0.6);
+              p.alpha = Math.min(1.0, p.baseAlpha + proximity * 0.5);
+            } else {
+              // Ease back radius & alpha
+              p.radius += (p.baseRadius - p.radius) * 0.1;
+              p.alpha += (p.baseAlpha - p.alpha) * 0.1;
+            }
+          } else {
+            p.radius += (p.baseRadius - p.radius) * 0.1;
+            p.alpha += (p.baseAlpha - p.alpha) * 0.1;
+          }
+
+          // 2. Shockwave ripple physics
+          for (let s = 0; s < shockwaves.length; s++) {
+            const sw = shockwaves[s];
+            const dx = p.x - sw.x;
+            const dy = p.y - sw.y;
+            const dist = Math.hypot(dx, dy);
+            const waveDiff = Math.abs(dist - sw.radius);
+
+            if (waveDiff < 30) {
+              const waveForce = (1 - waveDiff / 30) * sw.strength * 12;
+              const angle = Math.atan2(dy, dx);
+              p.vx += Math.cos(angle) * waveForce;
+              p.vy += Math.sin(angle) * waveForce;
             }
           }
 
-          // 2. Ambient organic floating wave
-          const ambientWaveX = Math.sin(time + p.noiseOffset) * 0.4;
-          const ambientWaveY = Math.cos(time + p.noiseOffset * 1.2) * 0.4;
+          // 3. Ambient organic breathing wave
+          const ambientWaveX = Math.sin(time + p.noiseOffset) * 0.35;
+          const ambientWaveY = Math.cos(time + p.noiseOffset * 1.2) * 0.35;
 
-          // 3. Spring force returning to resting origin
+          // 4. Harmonic spring force returning to resting origin
           const springX = (p.originX + ambientWaveX - p.x) * k;
           const springY = (p.originY + ambientWaveY - p.y) * k;
 
@@ -284,12 +361,16 @@ export function ParticlePortraitCanvas({
           p.y += p.vy;
         }
 
-        // Draw the white circle
+        // 5. Render halftone circle
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
         ctx.fill();
       }
+
+      // Smooth decay of mouse velocity
+      mouse.vx *= 0.8;
+      mouse.vy *= 0.8;
 
       animationFrameId.current = requestAnimationFrame(render);
     };
@@ -303,26 +384,80 @@ export function ParticlePortraitCanvas({
     };
   }, [mouseRadius, pushStrength]);
 
-  // Mouse / Pointer event handlers
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    mouseRef.current = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      active: true,
+  // Window-wide pointer tracking for seamless interaction across all hero elements
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handlePointerMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      const currentX = e.clientX - rect.left;
+      const currentY = e.clientY - rect.top;
+
+      const mouse = mouseRef.current;
+      if (mouse.prevX !== -9999) {
+        mouse.vx = currentX - mouse.prevX;
+        mouse.vy = currentY - mouse.prevY;
+      }
+
+      mouse.prevX = currentX;
+      mouse.prevY = currentY;
+      mouse.x = currentX;
+      mouse.y = currentY;
+      mouse.active = true;
+
+      // Calculate 3D tilt target
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      tiltRef.current.targetX = ((currentX - centerX) / centerX) * 5;
+      tiltRef.current.targetY = -((currentY - centerY) / centerY) * 5;
+    };
+
+    const handlePointerLeave = () => {
+      const mouse = mouseRef.current;
+      mouse.active = false;
+      mouse.prevX = -9999;
+      mouse.prevY = -9999;
+      mouse.vx = 0;
+      mouse.vy = 0;
+      tiltRef.current.targetX = 0;
+      tiltRef.current.targetY = 0;
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("mouseleave", handlePointerLeave);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("mouseleave", handlePointerLeave);
     };
   }, []);
 
-  const handleMouseLeave = useCallback(() => {
-    mouseRef.current.active = false;
+  // Click shockwave interaction
+  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    shockwavesRef.current.push({
+      x: clickX,
+      y: clickY,
+      radius: 0,
+      maxRadius: 280,
+      strength: 1.0,
+    });
   }, []);
 
   return (
     <div
       ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+      style={{
+        transition: "transform 0.1s ease-out",
+        transformStyle: "preserve-3d",
+        willChange: "transform",
+      }}
       className={`relative w-full h-full overflow-hidden select-none cursor-crosshair ${className}`}
     >
       <canvas ref={canvasRef} className="block w-full h-full" />
