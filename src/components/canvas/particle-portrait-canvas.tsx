@@ -285,8 +285,8 @@ export function ParticlePortraitCanvas({
       const shockwaves = shockwavesRef.current;
 
       // Restorative spring physics parameters
-      const springStiffness = 0.045; // Smooth restoring force
-      const damping = 0.90;          // Fluid damping so it oscillates gently for a short time and returns
+      const springStiffness = 0.04; // Smooth, gentle restoring force
+      const damping = 0.88;         // Controlled damping to settle cleanly without lingering oscillation
 
       // Expand and prune shockwaves
       for (let s = shockwaves.length - 1; s >= 0; s--) {
@@ -304,27 +304,26 @@ export function ParticlePortraitCanvas({
         const p = particles[i];
 
         if (!prefersReducedMotion) {
-          // 1. Mouse hover 3D organic displacement
+          // 1. Mouse hover 3D organic displacement (clean forward/depth pop, no spinning/revolving)
           if (mouse.active) {
             const dx = p.originX - mouse.x;
             const dy = p.originY - mouse.y;
             const dist = Math.hypot(dx, dy);
 
             if (dist < mouseRadius && dist > 0) {
-              const proximity = (1 - dist / mouseRadius);
+              const proximity = 1 - dist / mouseRadius;
               // Smooth cosine bell curve for localized softness
               const smoothProximity = 0.5 - 0.5 * Math.cos(proximity * Math.PI);
 
-              // 3D organic impulse - no hollow hole created!
-              // Particles sway gently along X, Y, and pop toward the viewer on Z
-              const angle = p.phase + time * 1.5;
-              const impulseX = Math.cos(angle) * (smoothProximity * 1.4);
-              const impulseY = Math.sin(angle) * (smoothProximity * 1.4);
-              const impulseZ = smoothProximity * 4.2; // pops forward in 3D
+              // Directional, non-revolving 3D movement:
+              // Gentle radial nudge outward and soft forward lift along Z
+              const dirX = dist > 0.001 ? dx / dist : 0;
+              const dirY = dist > 0.001 ? dy / dist : 0;
 
-              p.vx += impulseX;
-              p.vy += impulseY;
-              p.vz += impulseZ;
+              // Moderate, gentle velocity impulse
+              p.vx += dirX * smoothProximity * 0.45;
+              p.vy += dirY * smoothProximity * 0.45;
+              p.vz += smoothProximity * 2.2; // Pops smoothly forward along Z
 
               // Subtle brightness boost without blowing out
               p.alpha = Math.min(1.0, p.baseAlpha + smoothProximity * 0.35);
@@ -345,16 +344,16 @@ export function ParticlePortraitCanvas({
 
             if (waveDiff < 25) {
               const waveFactor = (1 - waveDiff / 25) * sw.strength;
-              p.vz += waveFactor * 5;
-              p.vx += (dx / (dist || 1)) * waveFactor * 1.2;
-              p.vy += (dy / (dist || 1)) * waveFactor * 1.2;
+              p.vz += waveFactor * 4;
+              p.vx += (dx / (dist || 1)) * waveFactor * 0.8;
+              p.vy += (dy / (dist || 1)) * waveFactor * 0.8;
             }
           }
 
           // 3. Gentle ambient 3D floating harmonic
-          const ambientWaveX = Math.sin(time + p.noiseOffset) * 0.4;
-          const ambientWaveY = Math.cos(time + p.noiseOffset * 1.3) * 0.4;
-          const ambientWaveZ = Math.sin(time * 0.8 + p.phase) * 1.5;
+          const ambientWaveX = Math.sin(time + p.noiseOffset) * 0.3;
+          const ambientWaveY = Math.cos(time + p.noiseOffset * 1.3) * 0.3;
+          const ambientWaveZ = Math.sin(time * 0.8 + p.phase) * 1.0;
 
           // 4. Harmonic restoring spring toward origin on all 3 dimensions (X, Y, Z)
           const targetX = p.originX + ambientWaveX;
