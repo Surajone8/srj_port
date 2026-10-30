@@ -6,15 +6,19 @@ import { useEffect, useRef, useState, useCallback } from "react";
 interface Particle {
   originX: number;
   originY: number;
+  originZ: number;
   x: number;
   y: number;
+  z: number;
   vx: number;
   vy: number;
+  vz: number;
   radius: number;
   baseRadius: number;
   alpha: number;
   baseAlpha: number;
   noiseOffset: number;
+  phase: number;
 }
 
 interface ParticlePortraitCanvasProps {
@@ -30,7 +34,6 @@ export function ParticlePortraitCanvas({
   className = "",
   pointSpacing = 7,
   mouseRadius = 140,
-  pushStrength = 12,
 }: ParticlePortraitCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -45,6 +48,7 @@ export function ParticlePortraitCanvas({
     prevY: number;
     vx: number;
     vy: number;
+    speed: number;
     active: boolean;
   }>({
     x: -9999,
@@ -53,6 +57,7 @@ export function ParticlePortraitCanvas({
     prevY: -9999,
     vx: 0,
     vy: 0,
+    speed: 0,
     active: false,
   });
 
@@ -119,7 +124,6 @@ export function ParticlePortraitCanvas({
 
             // Only plot points where there is discernible light/texture
             if (luminance > 0.12) {
-              // Right half vs left half halftone nuance (Axevia effect)
               const isRightSide = x > width * 0.48;
               const sizeMultiplier = isRightSide ? 1.3 : 0.85;
 
@@ -132,18 +136,25 @@ export function ParticlePortraitCanvas({
               // Base alpha
               const baseAlpha = Math.min(1.0, 0.25 + luminance * 0.75);
 
+              // 3D depth baseline from facial luminance
+              const originZ = (luminance - 0.5) * 40;
+
               particles.push({
                 originX: x,
                 originY: y,
-                x: x + (Math.random() - 0.5) * 3,
-                y: y + (Math.random() - 0.5) * 3,
+                originZ,
+                x,
+                y,
+                z: originZ,
                 vx: 0,
                 vy: 0,
+                vz: 0,
                 radius: baseRadius,
                 baseRadius,
                 alpha: baseAlpha,
                 baseAlpha,
                 noiseOffset: Math.random() * Math.PI * 2,
+                phase: Math.random() * Math.PI * 2,
               });
             }
           }
@@ -183,19 +194,24 @@ export function ParticlePortraitCanvas({
             const luminance = isRightSide ? 0.7 + Math.random() * 0.3 : 0.25 + Math.random() * 0.3;
             const baseRadius = Math.max(0.8, luminance * (pointSpacing * 0.45));
             const baseAlpha = isRightSide ? 0.9 : 0.45;
+            const originZ = (luminance - 0.5) * 40;
 
             particles.push({
               originX: x,
               originY: y,
+              originZ,
               x,
               y,
+              z: originZ,
               vx: 0,
               vy: 0,
+              vz: 0,
               radius: baseRadius,
               baseRadius,
               alpha: baseAlpha,
               baseAlpha,
               noiseOffset: Math.random() * Math.PI * 2,
+              phase: Math.random() * Math.PI * 2,
             });
           }
         }
@@ -263,7 +279,7 @@ export function ParticlePortraitCanvas({
     let time = 0;
 
     const render = () => {
-      time += 0.015;
+      time += 0.02;
       const width = canvas.width / (window.devicePixelRatio || 1);
       const height = canvas.height / (window.devicePixelRatio || 1);
 
@@ -281,89 +297,102 @@ export function ParticlePortraitCanvas({
       const mouse = mouseRef.current;
       const shockwaves = shockwavesRef.current;
 
-      const k = 0.075; // Spring stiffness
-      const friction = 0.86; // Damping
+      // Restorative spring physics parameters
+      const springStiffness = 0.045; // Smooth restoring force
+      const damping = 0.90;          // Fluid damping so it oscillates gently for a short time and returns
 
       // Expand and prune shockwaves
       for (let s = shockwaves.length - 1; s >= 0; s--) {
         const sw = shockwaves[s];
-        sw.radius += 8;
+        sw.radius += 7;
         sw.strength *= 0.94;
         if (sw.radius > sw.maxRadius || sw.strength < 0.05) {
           shockwaves.splice(s, 1);
         }
       }
 
+      const fov = 750; // Perspective camera focal depth
+
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
         if (!prefersReducedMotion) {
-          // 1. Mouse magnetic dispersion & velocity push
+          // 1. Mouse hover 3D organic displacement
           if (mouse.active) {
-            const dx = p.x - mouse.x;
-            const dy = p.y - mouse.y;
+            const dx = p.originX - mouse.x;
+            const dy = p.originY - mouse.y;
             const dist = Math.hypot(dx, dy);
 
             if (dist < mouseRadius && dist > 0) {
-              // Proximity ratio (1 at cursor center, 0 at outer boundary)
-              const proximity = 1 - dist / mouseRadius;
-              const angle = Math.atan2(dy, dx);
+              const proximity = (1 - dist / mouseRadius);
+              // Smooth cosine bell curve for localized softness
+              const smoothProximity = 0.5 - 0.5 * Math.cos(proximity * Math.PI);
 
-              // Combined radial force + mouse velocity wake
-              const radialPush = proximity * pushStrength;
-              const velocityPushX = mouse.vx * proximity * 0.35;
-              const velocityPushY = mouse.vy * proximity * 0.35;
+              // 3D organic impulse - no hollow hole created!
+              // Particles sway gently along X, Y, and pop toward the viewer on Z
+              const angle = p.phase + time * 1.5;
+              const impulseX = Math.cos(angle) * (smoothProximity * 1.4);
+              const impulseY = Math.sin(angle) * (smoothProximity * 1.4);
+              const impulseZ = smoothProximity * 4.2; // pops forward in 3D
 
-              p.vx += Math.cos(angle) * radialPush + velocityPushX;
-              p.vy += Math.sin(angle) * radialPush + velocityPushY;
+              p.vx += impulseX;
+              p.vy += impulseY;
+              p.vz += impulseZ;
 
-              // Proximity spotlight: expand size & boost alpha
-              p.radius = p.baseRadius * (1 + proximity * 0.6);
-              p.alpha = Math.min(1.0, p.baseAlpha + proximity * 0.5);
+              // Subtle brightness boost without blowing out
+              p.alpha = Math.min(1.0, p.baseAlpha + smoothProximity * 0.35);
             } else {
-              // Ease back radius & alpha
-              p.radius += (p.baseRadius - p.radius) * 0.1;
-              p.alpha += (p.baseAlpha - p.alpha) * 0.1;
+              p.alpha += (p.baseAlpha - p.alpha) * 0.05;
             }
           } else {
-            p.radius += (p.baseRadius - p.radius) * 0.1;
-            p.alpha += (p.baseAlpha - p.alpha) * 0.1;
+            p.alpha += (p.baseAlpha - p.alpha) * 0.05;
           }
 
-          // 2. Shockwave ripple physics
+          // 2. Shockwave ripple in 3D
           for (let s = 0; s < shockwaves.length; s++) {
             const sw = shockwaves[s];
-            const dx = p.x - sw.x;
-            const dy = p.y - sw.y;
+            const dx = p.originX - sw.x;
+            const dy = p.originY - sw.y;
             const dist = Math.hypot(dx, dy);
             const waveDiff = Math.abs(dist - sw.radius);
 
-            if (waveDiff < 30) {
-              const waveForce = (1 - waveDiff / 30) * sw.strength * 12;
-              const angle = Math.atan2(dy, dx);
-              p.vx += Math.cos(angle) * waveForce;
-              p.vy += Math.sin(angle) * waveForce;
+            if (waveDiff < 25) {
+              const waveFactor = (1 - waveDiff / 25) * sw.strength;
+              p.vz += waveFactor * 5;
+              p.vx += (dx / (dist || 1)) * waveFactor * 1.2;
+              p.vy += (dy / (dist || 1)) * waveFactor * 1.2;
             }
           }
 
-          // 3. Ambient organic breathing wave
-          const ambientWaveX = Math.sin(time + p.noiseOffset) * 0.35;
-          const ambientWaveY = Math.cos(time + p.noiseOffset * 1.2) * 0.35;
+          // 3. Gentle ambient 3D floating harmonic
+          const ambientWaveX = Math.sin(time + p.noiseOffset) * 0.4;
+          const ambientWaveY = Math.cos(time + p.noiseOffset * 1.3) * 0.4;
+          const ambientWaveZ = Math.sin(time * 0.8 + p.phase) * 1.5;
 
-          // 4. Harmonic spring force returning to resting origin
-          const springX = (p.originX + ambientWaveX - p.x) * k;
-          const springY = (p.originY + ambientWaveY - p.y) * k;
+          // 4. Harmonic restoring spring toward origin on all 3 dimensions (X, Y, Z)
+          const targetX = p.originX + ambientWaveX;
+          const targetY = p.originY + ambientWaveY;
+          const targetZ = p.originZ + ambientWaveZ;
 
-          p.vx = (p.vx + springX) * friction;
-          p.vy = (p.vy + springY) * friction;
+          p.vx = (p.vx + (targetX - p.x) * springStiffness) * damping;
+          p.vy = (p.vy + (targetY - p.y) * springStiffness) * damping;
+          p.vz = (p.vz + (targetZ - p.z) * springStiffness) * damping;
 
           p.x += p.vx;
           p.y += p.vy;
+          p.z += p.vz;
         }
 
-        // 5. Render halftone circle
+        // 5. 3D Perspective Projection
+        // As particle pops along Z, it slightly scales its radius and projects its (X, Y)
+        const scale = fov / (fov - p.z);
+        const projectedRadius = Math.max(0.6, p.baseRadius * scale);
+        const projX = (p.x - width / 2) * scale + width / 2;
+        const projY = (p.y - height / 2) * scale + height / 2;
+
+        // Render circle
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.arc(projX, projY, projectedRadius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
         ctx.fill();
       }
@@ -382,7 +411,7 @@ export function ParticlePortraitCanvas({
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [mouseRadius, pushStrength]);
+  }, [mouseRadius]);
 
   // Window-wide pointer tracking for seamless interaction across all hero elements
   useEffect(() => {
@@ -398,6 +427,7 @@ export function ParticlePortraitCanvas({
       if (mouse.prevX !== -9999) {
         mouse.vx = currentX - mouse.prevX;
         mouse.vy = currentY - mouse.prevY;
+        mouse.speed = Math.hypot(mouse.vx, mouse.vy);
       }
 
       mouse.prevX = currentX;
@@ -420,6 +450,7 @@ export function ParticlePortraitCanvas({
       mouse.prevY = -9999;
       mouse.vx = 0;
       mouse.vy = 0;
+      mouse.speed = 0;
       tiltRef.current.targetX = 0;
       tiltRef.current.targetY = 0;
     };
