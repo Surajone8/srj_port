@@ -61,13 +61,6 @@ export function ParticlePortraitCanvas({
     active: false,
   });
 
-  const tiltRef = useRef<{ currentX: number; currentY: number; targetX: number; targetY: number }>({
-    currentX: 0,
-    currentY: 0,
-    targetX: 0,
-    targetY: 0,
-  });
-
   const animationFrameId = useRef<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -283,12 +276,6 @@ export function ParticlePortraitCanvas({
       const width = canvas.width / (window.devicePixelRatio || 1);
       const height = canvas.height / (window.devicePixelRatio || 1);
 
-      // Smooth 3D Parallax Tilt update (Lerp)
-      const tilt = tiltRef.current;
-      tilt.currentX += (tilt.targetX - tilt.currentX) * 0.06;
-      tilt.currentY += (tilt.targetY - tilt.currentY) * 0.06;
-      container.style.transform = `perspective(1200px) rotateX(${tilt.currentY}deg) rotateY(${tilt.currentX}deg)`;
-
       // Clear with pitch dark background
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, width, height);
@@ -435,12 +422,6 @@ export function ParticlePortraitCanvas({
       mouse.x = currentX;
       mouse.y = currentY;
       mouse.active = true;
-
-      // Calculate 3D tilt target
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      tiltRef.current.targetX = ((currentX - centerX) / centerX) * 5;
-      tiltRef.current.targetY = -((currentY - centerY) / centerY) * 5;
     };
 
     const handlePointerLeave = () => {
@@ -451,8 +432,6 @@ export function ParticlePortraitCanvas({
       mouse.vx = 0;
       mouse.vy = 0;
       mouse.speed = 0;
-      tiltRef.current.targetX = 0;
-      tiltRef.current.targetY = 0;
     };
 
     window.addEventListener("pointermove", handlePointerMove);
@@ -484,11 +463,6 @@ export function ParticlePortraitCanvas({
     <div
       ref={containerRef}
       onClick={handleClick}
-      style={{
-        transition: "transform 0.1s ease-out",
-        transformStyle: "preserve-3d",
-        willChange: "transform",
-      }}
       className={`relative w-full h-full overflow-hidden select-none cursor-crosshair ${className}`}
     >
       <canvas ref={canvasRef} className="block w-full h-full" />
