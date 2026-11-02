@@ -131,38 +131,70 @@ export function ProjectsSection() {
                   projectCardsRef.current[idx] = el;
                 }}
                 onMouseEnter={() => setActiveProjectIndex(idx)}
-                className={`relative group rounded-xl border transition-all duration-300 overflow-hidden bg-[#0c0e14]/90 shrink-0 ${
+                className={`relative group transition-all duration-500 overflow-hidden bg-black/60 shrink-0 border-y ${
                   isActive
-                    ? "border-white/25 shadow-2xl shadow-black/90"
-                    : "border-white/[0.08] hover:border-white/20"
+                    ? "border-transparent"
+                    : "border-white/[0.08]"
                 }`}
               >
-                {/* Outer Bracket Notch Accents */}
-                <span className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white/40" />
-                <span className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-white/40" />
-                <span className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-white/40" />
-                <span className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white/40" />
+                {/* Top Border Hover Glow Line: expands from left to right with intense white gradient */}
+                <div
+                  className={`absolute top-0 left-0 h-[1.5px] bg-gradient-to-r from-white via-white/90 to-transparent transition-all duration-700 ease-out z-20 pointer-events-none ${
+                    isActive ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
+                  }`}
+                />
 
-                <div className="p-5 sm:p-6 flex flex-col md:flex-row gap-5 items-center md:items-start">
-                  {/* Left: Project Visual Thumbnail Frame (Fixed Ratio like Axevia) */}
-                  <div className="w-full md:w-44 lg:w-48 h-36 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black relative group/thumb">
+                {/* Bottom Border Hover Glow Line: expands from left to right with lighter white gradient */}
+                <div
+                  className={`absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-white/60 via-white/40 to-transparent transition-all duration-700 ease-out z-20 pointer-events-none ${
+                    isActive ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
+                  }`}
+                />
+
+                {/* Very very light soft white backdrop ambient glow behind the card & image */}
+                <div
+                  className={`absolute -inset-1 bg-white/[0.025] blur-xl rounded-full transition-opacity duration-700 pointer-events-none z-0 ${
+                    isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                  }`}
+                />
+
+                {/* Corner Bracket Notch Accents */}
+                <span className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white/40 z-10" />
+                <span className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-white/40 z-10" />
+                <span className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-white/40 z-10" />
+                <span className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white/40 z-10" />
+
+                <div className="relative z-10 p-5 sm:p-7 flex flex-col md:flex-row gap-6 items-center md:items-start">
+                  {/* Left: Project Visual Thumbnail Frame with subtle white glow */}
+                  <div className="relative w-full md:w-48 lg:w-52 h-40 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black group/thumb">
+                    {/* Very gentle white shadow behind image */}
+                    <div
+                      className={`absolute -inset-2 bg-white/[0.06] blur-lg transition-opacity duration-500 rounded-lg pointer-events-none ${
+                        isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                      }`}
+                    />
+
                     {project.coverImage ? (
                       <Image
                         src={project.coverImage}
                         alt={project.title}
                         fill
-                        sizes="(max-width: 768px) 100vw, 200px"
-                        className="object-cover grayscale contrast-125 group-hover/thumb:grayscale-0 transition-all duration-500"
+                        sizes="(max-width: 768px) 100vw, 208px"
+                        className={`object-cover contrast-125 transition-all duration-700 ${
+                          isActive
+                            ? "grayscale-0 scale-105"
+                            : "grayscale group-hover:grayscale-0 group-hover:scale-105"
+                        }`}
                         unoptimized
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-neutral-800 to-black" />
                     )}
-                    <div className="absolute inset-0 bg-black/20 group-hover/thumb:bg-transparent transition-colors" />
+                    <div className="absolute inset-0 bg-black/25 group-hover/thumb:bg-transparent transition-colors duration-500" />
                   </div>
 
                   {/* Right: Project Metadata & Copy */}
-                  <div className="flex-1 flex flex-col justify-between h-full gap-3 w-full">
+                  <div className="flex-1 flex flex-col justify-between h-full gap-3.5 w-full">
                     <div>
                       {/* Meta Eyebrow */}
                       <div className="text-[10px] sm:text-[11px] text-slate-400 tracking-wider uppercase flex items-center gap-2">
@@ -172,8 +204,8 @@ export function ProjectsSection() {
                         <span className="text-slate-400">{project.year}</span>
                       </div>
 
-                      {/* Main Title (Clean uppercase sans typography) */}
-                      <h3 className="text-xl sm:text-2xl lg:text-[1.65rem] font-bold text-white tracking-tight uppercase font-sans mt-1.5 group-hover:text-blue-400 transition-colors">
+                      {/* Main Title */}
+                      <h3 className="text-xl sm:text-2xl lg:text-[1.75rem] font-bold text-white tracking-tight uppercase font-sans mt-1.5 group-hover:text-blue-400 transition-colors">
                         {project.title}
                       </h3>
 
@@ -183,8 +215,8 @@ export function ProjectsSection() {
                       </p>
                     </div>
 
-                    {/* Bottom Tags & View Case Link */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/[0.06] mt-1">
+                    {/* Bottom Tags & View Case / View Project Link */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3.5 border-t border-white/[0.06] mt-1">
                       <div className="flex flex-wrap items-center gap-1.5">
                         {project.tags.map((tag) => (
                           <span
@@ -196,13 +228,27 @@ export function ProjectsSection() {
                         ))}
                       </div>
 
-                      <a
-                        href={`#${project.slug}`}
-                        className="inline-flex items-center gap-1.5 text-xs text-white hover:text-blue-400 font-bold uppercase tracking-wider transition-colors shrink-0 cursor-pointer"
-                      >
-                        <span>VIEW CASE</span>
-                        <span className="text-slate-500 group-hover:translate-x-0.5 transition-transform">→</span>
-                      </a>
+                      <div className="flex items-center gap-3">
+                        {/* Interactive Pill Button when hovered/active */}
+                        <a
+                          href={`#${project.slug}`}
+                          className={`hidden sm:inline-flex items-center px-3.5 py-1 rounded-md text-[11px] font-mono tracking-wider uppercase transition-all duration-300 border ${
+                            isActive
+                              ? "bg-white/[0.08] border-white/20 text-white"
+                              : "opacity-0 group-hover:opacity-100 bg-white/[0.05] border-white/10 text-slate-300 hover:text-white"
+                          }`}
+                        >
+                          VIEW PROJECT
+                        </a>
+
+                        <a
+                          href={`#${project.slug}`}
+                          className="inline-flex items-center gap-1.5 text-xs text-white hover:text-blue-400 font-bold uppercase tracking-wider transition-colors shrink-0 cursor-pointer"
+                        >
+                          <span>VIEW CASE</span>
+                          <span className="text-slate-500 group-hover:translate-x-0.5 transition-transform">→</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
