@@ -54,21 +54,23 @@ body {
 
 /* Infinite Marquee Animation */
 @keyframes ticker-marquee {
-  0% {
-    transform: translateX(0);
+  from {
+    transform: translate3d(0, 0, 0);
   }
-  100% {
-    transform: translateX(-50%);
+  to {
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
 .animate-ticker {
-  display: flex;
-  width: max-content;
-  animation: ticker-marquee 18s linear infinite;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  width: max-content !important;
+  animation: ticker-marquee 20s linear infinite !important;
   will-change: transform;
 }
 
 .animate-ticker:hover {
-  animation-play-state: paused;
+  animation-play-state: paused !important;
 }

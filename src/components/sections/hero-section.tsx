@@ -117,42 +117,42 @@ export function HeroSection() {
       <footer className="relative z-30 flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-white/[0.08] font-mono text-[11px] text-slate-400">
         {/* Infinite Looping Status Badges */}
         <div className="relative overflow-hidden w-full md:max-w-xl [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-          <div className="animate-ticker items-center gap-3 py-0.5">
+          <div className="flex flex-row flex-nowrap w-max animate-ticker items-center gap-3 py-0.5">
             {/* Set 1 */}
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+            <div className="flex flex-row flex-nowrap items-center gap-3 shrink-0">
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03] whitespace-nowrap">
                 <span className="text-slate-500 text-[10px]">RENDERING</span>
                 <span className="text-white font-bold">WEBGL / CANVAS</span>
               </div>
-              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03] whitespace-nowrap">
                 <span className="text-slate-500 text-[10px]">ZONE_ID</span>
                 <span className="text-white font-bold">SOFTWARE DEVELOPER</span>
               </div>
-              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03] whitespace-nowrap">
                 <span className="text-slate-500 text-[10px]">AVAILABILITY</span>
                 <span className="text-emerald-400 font-bold">OPEN</span>
               </div>
-              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03] whitespace-nowrap">
                 <span className="text-slate-500 text-[10px]">STACK</span>
                 <span className="text-blue-400 font-bold">REACT · MERN · PYTHON ML</span>
               </div>
             </div>
 
             {/* Set 2 (Duplicate for seamless infinite loop) */}
-            <div className="flex items-center gap-3 shrink-0" aria-hidden="true">
-              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+            <div className="flex flex-row flex-nowrap items-center gap-3 shrink-0" aria-hidden="true">
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03] whitespace-nowrap">
                 <span className="text-slate-500 text-[10px]">RENDERING</span>
                 <span className="text-white font-bold">WEBGL / CANVAS</span>
               </div>
-              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03] whitespace-nowrap">
                 <span className="text-slate-500 text-[10px]">ZONE_ID</span>
                 <span className="text-white font-bold">SOFTWARE DEVELOPER</span>
               </div>
-              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03] whitespace-nowrap">
                 <span className="text-slate-500 text-[10px]">AVAILABILITY</span>
                 <span className="text-emerald-400 font-bold">OPEN</span>
               </div>
-              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03] whitespace-nowrap">
                 <span className="text-slate-500 text-[10px]">STACK</span>
                 <span className="text-blue-400 font-bold">REACT · MERN · PYTHON ML</span>
               </div>
