@@ -7,7 +7,8 @@ import { featuredProjects } from "@/content/projects";
 import { ArrowUpRight } from "lucide-react";
 
 export function ProjectsSection() {
-  const [activeProjectIndex, setActiveProjectIndex] = useState(3); // Default to project 04 like screenshot
+  const [activeProjectIndex, setActiveProjectIndex] = useState(3); // Default to project 04 for HUD counter
+  const [hoveredProjectIndex, setHoveredProjectIndex] = useState<number | null>(null);
   const projectCardsRef = useRef<(HTMLElement | null)[]>([]);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -119,10 +120,11 @@ export function ProjectsSection() {
         <main
           ref={scrollContainerRef}
           onScroll={handleScroll}
+          onMouseLeave={() => setHoveredProjectIndex(null)}
           className="lg:col-span-8 xl:col-span-7 flex flex-col gap-8 py-12 px-4 sm:px-8 md:px-10 h-screen overflow-y-auto no-scrollbar border-r border-white/[0.08]"
         >
           {featuredProjects.map((project, idx) => {
-            const isActive = activeProjectIndex === idx;
+            const isHovered = hoveredProjectIndex === idx;
 
             return (
               <article
@@ -130,31 +132,35 @@ export function ProjectsSection() {
                 ref={(el) => {
                   projectCardsRef.current[idx] = el;
                 }}
-                onMouseEnter={() => setActiveProjectIndex(idx)}
+                onMouseEnter={() => {
+                  setHoveredProjectIndex(idx);
+                  setActiveProjectIndex(idx);
+                }}
+                onMouseLeave={() => setHoveredProjectIndex(null)}
                 className={`relative group transition-all duration-500 overflow-hidden bg-black/60 shrink-0 border-y ${
-                  isActive
+                  isHovered
                     ? "border-transparent"
                     : "border-white/[0.08]"
                 }`}
               >
-                {/* Top Border Hover Glow Line: expands from left to right with intense white gradient */}
+                {/* Top Border Hover Glow Line: smoothly expands on hover, fades away when moving out */}
                 <div
-                  className={`absolute top-0 left-0 h-[1.5px] bg-gradient-to-r from-white via-white/90 to-transparent transition-all duration-700 ease-out z-20 pointer-events-none ${
-                    isActive ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
+                  className={`absolute top-0 left-0 h-[1.5px] bg-gradient-to-r from-white via-white/90 to-transparent transition-all duration-500 ease-out z-20 pointer-events-none ${
+                    isHovered ? "w-full opacity-100" : "w-0 opacity-0"
                   }`}
                 />
 
-                {/* Bottom Border Hover Glow Line: expands from left to right with lighter white gradient */}
+                {/* Bottom Border Hover Glow Line: smoothly expands on hover, fades away when moving out */}
                 <div
-                  className={`absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-white/60 via-white/40 to-transparent transition-all duration-700 ease-out z-20 pointer-events-none ${
-                    isActive ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
+                  className={`absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-white/60 via-white/40 to-transparent transition-all duration-500 ease-out z-20 pointer-events-none ${
+                    isHovered ? "w-full opacity-100" : "w-0 opacity-0"
                   }`}
                 />
 
-                {/* Very very light soft white backdrop ambient glow behind the card & image */}
+                {/* Soft white backdrop ambient glow: fades away when cursor leaves */}
                 <div
-                  className={`absolute -inset-1 bg-white/[0.025] blur-xl rounded-full transition-opacity duration-700 pointer-events-none z-0 ${
-                    isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                  className={`absolute -inset-1 bg-white/[0.025] blur-xl rounded-full transition-opacity duration-500 pointer-events-none z-0 ${
+                    isHovered ? "opacity-100" : "opacity-0"
                   }`}
                 />
 
@@ -170,7 +176,7 @@ export function ProjectsSection() {
                     {/* Very gentle white shadow behind image */}
                     <div
                       className={`absolute -inset-2 bg-white/[0.06] blur-lg transition-opacity duration-500 rounded-lg pointer-events-none ${
-                        isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                        isHovered ? "opacity-100" : "opacity-0"
                       }`}
                     />
 
@@ -180,10 +186,10 @@ export function ProjectsSection() {
                         alt={project.title}
                         fill
                         sizes="(max-width: 768px) 100vw, 208px"
-                        className={`object-cover contrast-125 transition-all duration-700 ${
-                          isActive
+                        className={`object-cover contrast-125 transition-all duration-500 ${
+                          isHovered
                             ? "grayscale-0 scale-105"
-                            : "grayscale group-hover:grayscale-0 group-hover:scale-105"
+                            : "grayscale scale-100"
                         }`}
                         unoptimized
                       />
@@ -205,7 +211,9 @@ export function ProjectsSection() {
                       </div>
 
                       {/* Main Title */}
-                      <h3 className="text-xl sm:text-2xl lg:text-[1.75rem] font-bold text-white tracking-tight uppercase font-sans mt-1.5 group-hover:text-blue-400 transition-colors">
+                      <h3 className={`text-xl sm:text-2xl lg:text-[1.75rem] font-bold tracking-tight uppercase font-sans mt-1.5 transition-colors ${
+                        isHovered ? "text-blue-400" : "text-white"
+                      }`}>
                         {project.title}
                       </h3>
 
@@ -229,13 +237,13 @@ export function ProjectsSection() {
                       </div>
 
                       <div className="flex items-center gap-3">
-                        {/* Interactive Pill Button when hovered/active */}
+                        {/* Interactive Pill Button when hovered */}
                         <a
                           href={`#${project.slug}`}
                           className={`hidden sm:inline-flex items-center px-3.5 py-1 rounded-md text-[11px] font-mono tracking-wider uppercase transition-all duration-300 border ${
-                            isActive
-                              ? "bg-white/[0.08] border-white/20 text-white"
-                              : "opacity-0 group-hover:opacity-100 bg-white/[0.05] border-white/10 text-slate-300 hover:text-white"
+                            isHovered
+                              ? "opacity-100 bg-white/[0.08] border-white/20 text-white"
+                              : "opacity-0 bg-transparent border-transparent text-transparent pointer-events-none"
                           }`}
                         >
                           VIEW PROJECT
@@ -246,7 +254,7 @@ export function ProjectsSection() {
                           className="inline-flex items-center gap-1.5 text-xs text-white hover:text-blue-400 font-bold uppercase tracking-wider transition-colors shrink-0 cursor-pointer"
                         >
                           <span>VIEW CASE</span>
-                          <span className="text-slate-500 group-hover:translate-x-0.5 transition-transform">→</span>
+                          <span className={`transition-transform ${isHovered ? "translate-x-0.5 text-blue-400" : "text-slate-500"}`}>→</span>
                         </a>
                       </div>
                     </div>
