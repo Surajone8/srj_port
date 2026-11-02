@@ -1,4 +1,4 @@
-export type ProjectCategory = "fintech" | "ai" | "design-system" | "mobile" | "experimental";
+export type ProjectCategory = "web-app" | "ai-ml" | "mern-stack" | "frontend" | "full-stack";
 
 export interface ProjectMetric {
   label: string;
@@ -9,17 +9,21 @@ export interface ProjectMetric {
 export interface Project {
   id: string;
   slug: string;
+  num: string;
   title: string;
   tagline: string;
   description: string;
   category: ProjectCategory;
+  categoryLabel: string;
   year: number;
   featured: boolean;
   role: string;
-  deliverables: string[];
-  metrics: ProjectMetric[];
+  tags: string[];
+  deliverables?: string[];
+  metrics?: ProjectMetric[];
   techStack: string[];
   coverImage?: string;
+  previewGradient?: string;
   liveUrl?: string;
   caseStudyUrl?: string;
   figmaUrl?: string;
