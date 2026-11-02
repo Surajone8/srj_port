@@ -10,7 +10,7 @@ export function ContactSection() {
   const [copied, setCopied] = useState(false);
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText("hello@neerajyadav.design");
+    navigator.clipboard.writeText("surajyadav@gmail.com");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

@@ -2,32 +2,33 @@ import { SkillGroup } from "@/types";
 
 export const skillGroups: SkillGroup[] = [
   {
-    category: "Product & UI/UX Design",
+    category: "Frontend & Web Technologies",
     skills: [
-      { name: "Figma & FigJam (Variables, Auto-layout, Variants)", level: "expert" },
-      { name: "Design Systems & Token Architecture", level: "expert" },
-      { name: "Complex Interaction & Motion Design", level: "expert" },
-      { name: "User Research & Usability Testing", level: "advanced" },
-      { name: "Information Architecture & Wireframing", level: "expert" },
+      { name: "React.js & Next.js (App Router, SSR)", level: "expert" },
+      { name: "JavaScript (ES6+) & TypeScript", level: "expert" },
+      { name: "HTML5, CSS3 & Tailwind CSS", level: "expert" },
+      { name: "State Management (Redux Toolkit, Context API)", level: "advanced" },
+      { name: "RESTful APIs & GraphQL Integration", level: "expert" },
     ],
   },
   {
-    category: "Design Engineering & Frontend",
+    category: "Backend & MERN Stack",
     skills: [
-      { name: "React 19 & Next.js App Router", level: "expert" },
-      { name: "TypeScript & Strict Type Modeling", level: "expert" },
-      { name: "Tailwind CSS & Modern CSS (OKLCH, Subgrid)", level: "expert" },
-      { name: "HTML Canvas & Micro-animations", level: "advanced" },
-      { name: "Accessibility (WCAG 2.2 AAA Standards)", level: "expert" },
+      { name: "Node.js & Express.js", level: "expert" },
+      { name: "MongoDB & Mongoose (Schema, Aggregations)", level: "expert" },
+      { name: "Authentication & Security (JWT, OAuth, bcrypt)", level: "advanced" },
+      { name: "Database Design & Optimization", level: "advanced" },
+      { name: "API Architecture & Microservices", level: "proficient" },
     ],
   },
   {
-    category: "Tools & Methodologies",
+    category: "Python & Machine Learning",
     skills: [
-      { name: "Framer Motion & Spring Physics", level: "advanced" },
-      { name: "Git & Version Control Workflows", level: "expert" },
-      { name: "Design Sprint & Agile Delivery", level: "expert" },
-      { name: "Dev Mode & Code Connect Bridging", level: "expert" },
+      { name: "Python Core & OOP", level: "expert" },
+      { name: "Data Processing (NumPy, Pandas)", level: "advanced" },
+      { name: "Machine Learning (Scikit-Learn, Supervised/Unsupervised)", level: "advanced" },
+      { name: "Model Evaluation & Data Preprocessing", level: "advanced" },
+      { name: "FastAPI / Flask for ML Model Serving", level: "proficient" },
     ],
   },
 ];

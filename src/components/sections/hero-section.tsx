@@ -82,16 +82,16 @@ export function HeroSection() {
           {/* Headline */}
           <div className="flex flex-col leading-none">
             <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[5.5rem] font-black tracking-tight uppercase font-sans text-stroke-white drop-shadow-2xl">
-              IMMERSIVE
+              SOFTWARE
             </h1>
             <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[5.5rem] font-black tracking-tight uppercase font-sans text-white mt-[-0.1em] drop-shadow-2xl">
-              INTERFACES
+              DEVELOPER
             </h1>
           </div>
 
           {/* Subheading / Stack line */}
           <div className="font-mono text-xs sm:text-sm tracking-widest text-slate-400 uppercase">
-            | WEBGL · THREE.JS · DESIGN SYSTEMS · MOTION |
+            | REACT.JS · MERN STACK · PYTHON · MACHINE LEARNING |
           </div>
 
           {/* Frosted Glass Quote Card */}
@@ -99,8 +99,8 @@ export function HeroSection() {
             {/* Top gradient highlight line */}
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <p className="font-mono text-xs sm:text-[13px] text-slate-300 leading-relaxed uppercase tracking-wide">
-              &ldquo;I BUILD HAND-CODED SITES WHERE MOTION, SHADERS AND TYPOGRAPHY DO
-              THE TALKING — AND THE PAGE STILL LOADS FAST.&rdquo;
+              &ldquo;I BUILD SCALABLE FULL-STACK WEB APPS AND ML SOLUTIONS WITH REACT,
+              NODE, AND PYTHON — DELIVERING PRODUCTION-GRADE PERFORMANCE.&rdquo;
             </p>
           </div>
         </div>
@@ -124,7 +124,7 @@ export function HeroSection() {
 
           <div className="hidden md:flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
             <span className="text-slate-500 text-[10px]">ZONE_ID</span>
-            <span className="text-white font-bold">CREATIVE DEVELOPER</span>
+            <span className="text-white font-bold">SOFTWARE DEVELOPER</span>
           </div>
 
           <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
@@ -138,10 +138,10 @@ export function HeroSection() {
           <div className="hidden sm:block">
             <span className="text-slate-500 mr-2">Wanna Say Hello?</span>
             <a
-              href="mailto:hello@neerajyadav.design"
+              href="mailto:surajyadav@gmail.com"
               className="text-white font-bold hover:text-blue-400 transition-colors underline-offset-4 hover:underline"
             >
-              hello@neerajyadav.design
+              surajyadav@gmail.com
             </a>
           </div>
 

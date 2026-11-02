@@ -7,9 +7,9 @@ export function HudDeveloperStats() {
   const [activeRow, setActiveRow] = useState<number | null>(null);
 
   const specs = [
-    { label: "ROLE", value: "CREATIVE DEVELOPER" },
-    { label: "STACK", value: "NEXT.JS / THREE.JS" },
-    { label: "FOCUS", value: "WEBGL / MOTION" },
+    { label: "ROLE", value: "SOFTWARE DEVELOPER" },
+    { label: "STACK", value: "REACT / MERN / PYTHON" },
+    { label: "FOCUS", value: "FULL STACK & ML" },
     { label: "AVAILABILITY", value: "OPEN FOR WORK" },
     { label: "RESPONSE", value: "UNDER 24H" },
   ];
@@ -39,10 +39,10 @@ export function HudDeveloperStats() {
         </div>
         <div className="border-l border-white/[0.08] pl-4 group cursor-default">
           <div className="text-3xl sm:text-4xl font-bold text-white tracking-tight group-hover:text-emerald-400 transition-colors">
-            10+
+            1.8+
           </div>
           <div className="text-[10px] text-slate-500 tracking-wider uppercase mt-1">
-            Experience Years
+            Years Experience (1y 10m)
           </div>
         </div>
       </div>

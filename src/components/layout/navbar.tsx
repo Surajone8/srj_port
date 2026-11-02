@@ -15,10 +15,10 @@ export function Navbar() {
           className="flex items-center gap-2 text-sm font-semibold tracking-wider text-white hover:text-blue-400 transition-colors"
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600/20 text-blue-400 font-mono text-xs font-bold border border-blue-500/30">
-            NY
+            SY
           </span>
           <span className="hidden sm:inline font-mono text-xs text-slate-400">
-            /design
+            /dev
           </span>
         </Link>
 
