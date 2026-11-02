@@ -114,34 +114,61 @@ export function HeroSection() {
       </div>
 
       {/* 4. BOTTOM TICKER / HUD FOOTER BAR */}
-      <footer className="relative z-30 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/[0.08] font-mono text-[11px] text-slate-400">
-        {/* Left Status Badges */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
-            <span className="text-slate-500 text-[10px]">RENDERING</span>
-            <span className="text-white font-bold">WEBGL / CANVAS</span>
-          </div>
+      <footer className="relative z-30 flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-white/[0.08] font-mono text-[11px] text-slate-400">
+        {/* Infinite Looping Status Badges */}
+        <div className="relative overflow-hidden w-full md:max-w-xl [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+          <div className="animate-ticker items-center gap-3 py-0.5">
+            {/* Set 1 */}
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+                <span className="text-slate-500 text-[10px]">RENDERING</span>
+                <span className="text-white font-bold">WEBGL / CANVAS</span>
+              </div>
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+                <span className="text-slate-500 text-[10px]">ZONE_ID</span>
+                <span className="text-white font-bold">SOFTWARE DEVELOPER</span>
+              </div>
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+                <span className="text-slate-500 text-[10px]">AVAILABILITY</span>
+                <span className="text-emerald-400 font-bold">OPEN</span>
+              </div>
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+                <span className="text-slate-500 text-[10px]">STACK</span>
+                <span className="text-blue-400 font-bold">REACT · MERN · PYTHON ML</span>
+              </div>
+            </div>
 
-          <div className="hidden md:flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
-            <span className="text-slate-500 text-[10px]">ZONE_ID</span>
-            <span className="text-white font-bold">SOFTWARE DEVELOPER</span>
-          </div>
-
-          <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
-            <span className="text-slate-500 text-[10px]">AVAILABILITY</span>
-            <span className="text-emerald-400 font-bold">OPEN</span>
+            {/* Set 2 (Duplicate for seamless infinite loop) */}
+            <div className="flex items-center gap-3 shrink-0" aria-hidden="true">
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+                <span className="text-slate-500 text-[10px]">RENDERING</span>
+                <span className="text-white font-bold">WEBGL / CANVAS</span>
+              </div>
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+                <span className="text-slate-500 text-[10px]">ZONE_ID</span>
+                <span className="text-white font-bold">SOFTWARE DEVELOPER</span>
+              </div>
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+                <span className="text-slate-500 text-[10px]">AVAILABILITY</span>
+                <span className="text-emerald-400 font-bold">OPEN</span>
+              </div>
+              <div className="flex items-center gap-1.5 border border-white/10 px-2.5 py-1 rounded-md bg-white/[0.03]">
+                <span className="text-slate-500 text-[10px]">STACK</span>
+                <span className="text-blue-400 font-bold">REACT · MERN · PYTHON ML</span>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Right Contact & Live Time */}
-        <div className="flex items-center gap-6">
-          <div className="hidden sm:block">
+        <div className="flex items-center justify-between sm:justify-end w-full md:w-auto gap-6 shrink-0">
+          <div>
             <span className="text-slate-500 mr-2">Wanna Say Hello?</span>
             <a
-              href="mailto:surajyadav@gmail.com"
+              href="mailto:ysuraj18333@gmail.com"
               className="text-white font-bold hover:text-blue-400 transition-colors underline-offset-4 hover:underline"
             >
-              surajyadav@gmail.com
+              ysuraj18333@gmail.com
             </a>
           </div>
 

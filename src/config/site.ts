@@ -17,7 +17,7 @@ export const siteConfig = {
     linkedin: "https://linkedin.com/in/surajyadav",
     twitter: "https://twitter.com/surajyadav",
     figma: "https://figma.com/@surajyadav",
-    email: "mailto:surajyadav@gmail.com",
+    email: "mailto:ysuraj18333@gmail.com",
   },
 } as const;
 
