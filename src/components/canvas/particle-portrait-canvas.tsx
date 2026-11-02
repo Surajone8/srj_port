@@ -30,9 +30,9 @@ interface ParticlePortraitCanvasProps {
 }
 
 export function ParticlePortraitCanvas({
-  imageSrc = "/images/portrait.jpg",
+  imageSrc = "/images/portrait.png",
   className = "",
-  pointSpacing = 7,
+  pointSpacing = 6,
   mouseRadius = 140,
 }: ParticlePortraitCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -118,12 +118,12 @@ export function ParticlePortraitCanvas({
             // Only plot points where there is discernible light/texture
             if (luminance > 0.12) {
               const isRightSide = x > width * 0.48;
-              const sizeMultiplier = isRightSide ? 1.3 : 0.85;
+              const sizeMultiplier = isRightSide ? 0.95 : 0.65;
 
               // Size circle based on brightness
               const baseRadius = Math.max(
-                0.75,
-                luminance * (pointSpacing * 0.48) * sizeMultiplier
+                0.45,
+                luminance * (pointSpacing * 0.35) * sizeMultiplier
               );
 
               // Base alpha
@@ -185,7 +185,7 @@ export function ParticlePortraitCanvas({
           if (inHead || inTorso) {
             const isRightSide = x > centerX;
             const luminance = isRightSide ? 0.7 + Math.random() * 0.3 : 0.25 + Math.random() * 0.3;
-            const baseRadius = Math.max(0.8, luminance * (pointSpacing * 0.45));
+            const baseRadius = Math.max(0.5, luminance * (pointSpacing * 0.32));
             const baseAlpha = isRightSide ? 0.9 : 0.45;
             const originZ = (luminance - 0.5) * 40;
 
@@ -372,7 +372,7 @@ export function ParticlePortraitCanvas({
         // 5. 3D Perspective Projection
         // As particle pops along Z, it slightly scales its radius and projects its (X, Y)
         const scale = fov / (fov - p.z);
-        const projectedRadius = Math.max(0.6, p.baseRadius * scale);
+        const projectedRadius = Math.max(0.4, p.baseRadius * scale);
         const projX = (p.x - width / 2) * scale + width / 2;
         const projY = (p.y - height / 2) * scale + height / 2;
 

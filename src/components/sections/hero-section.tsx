@@ -66,8 +66,8 @@ export function HeroSection() {
       <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-auto">
         <div className="w-full h-full max-w-[1300px] max-h-[880px] mx-auto">
           <ParticlePortraitCanvas
-            imageSrc="/images/portrait.jpg"
-            pointSpacing={7}
+            imageSrc="/images/portrait.png"
+            pointSpacing={6}
             mouseRadius={140}
             pushStrength={10}
             className="w-full h-full"
