@@ -143,18 +143,26 @@ export function ProjectsSection() {
                     : "border-white/[0.08]"
                 }`}
               >
-                {/* Top Border Hover Glow Line: smoothly expands on hover, fades away when moving out */}
+                {/* Top Border Glow Line: smoothly expands from left to right on hover, and retracts back in reverse when moving out */}
                 <div
-                  className={`absolute top-0 left-0 h-[1.5px] bg-gradient-to-r from-white via-white/90 to-transparent transition-all duration-500 ease-out z-20 pointer-events-none ${
-                    isHovered ? "w-full opacity-100" : "w-0 opacity-0"
-                  }`}
+                  className="absolute top-0 left-0 h-[1.5px] w-full bg-gradient-to-r from-white via-white/90 to-transparent transition-transform duration-500 ease-out z-20 pointer-events-none origin-left"
+                  style={{
+                    transform: isHovered ? "scaleX(1)" : "scaleX(0)",
+                    opacity: isHovered ? 1 : 0,
+                    transitionProperty: "transform, opacity",
+                    transitionDuration: isHovered ? "500ms" : "450ms",
+                  }}
                 />
 
-                {/* Bottom Border Hover Glow Line: smoothly expands on hover, fades away when moving out */}
+                {/* Bottom Border Glow Line: smoothly expands from left to right on hover, and retracts back in reverse when moving out */}
                 <div
-                  className={`absolute bottom-0 left-0 h-[1px] bg-gradient-to-r from-white/60 via-white/40 to-transparent transition-all duration-500 ease-out z-20 pointer-events-none ${
-                    isHovered ? "w-full opacity-100" : "w-0 opacity-0"
-                  }`}
+                  className="absolute bottom-0 left-0 h-[1px] w-full bg-gradient-to-r from-white/60 via-white/40 to-transparent transition-transform duration-500 ease-out z-20 pointer-events-none origin-left"
+                  style={{
+                    transform: isHovered ? "scaleX(1)" : "scaleX(0)",
+                    opacity: isHovered ? 1 : 0,
+                    transitionProperty: "transform, opacity",
+                    transitionDuration: isHovered ? "500ms" : "450ms",
+                  }}
                 />
 
                 {/* Soft white backdrop ambient glow: fades away when cursor leaves */}
