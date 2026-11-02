@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { featuredProjects } from "@/content/projects";
 import { ArrowUpRight } from "lucide-react";
 
@@ -19,8 +20,8 @@ export function ProjectsSection() {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const containerTop = container.getBoundingClientRect().top;
-    const containerCenter = containerTop + container.clientHeight / 2;
+    const containerRect = container.getBoundingClientRect();
+    const containerCenter = containerRect.top + containerRect.height / 2;
 
     let closestIndex = 0;
     let closestDist = Infinity;
@@ -48,32 +49,32 @@ export function ProjectsSection() {
   };
 
   return (
-    <section id="works" className="relative w-full bg-black text-white font-mono select-none overflow-hidden border-t border-white/[0.08]">
+    <section id="works" className="relative w-full min-h-screen bg-black text-white font-mono select-none overflow-hidden border-t border-white/[0.08]">
       {/* Background Subtle Tech Grid */}
-      <div className="absolute inset-0 figma-canvas-grid pointer-events-none opacity-40" />
+      <div className="absolute inset-0 figma-canvas-grid pointer-events-none opacity-30" />
 
       {/* Main 3-Column Layout: Left Index | Center Project Feed | Right Big HUD Column */}
-      <div className="relative z-10 w-full max-w-[1600px] mx-auto min-h-[90vh] grid grid-cols-1 lg:grid-cols-12 gap-0">
+      <div className="relative z-10 w-full h-screen grid grid-cols-1 lg:grid-cols-12 gap-0">
         
         {/* ========================================================= */}
-        {/* LEFT COLUMN: INDEX & VERTICAL SCRUBBER (Hidden on mobile) */}
+        {/* LEFT COLUMN: INDEX & VERTICAL SCRUBBER                    */}
         {/* ========================================================= */}
-        <aside className="hidden xl:flex lg:col-span-2 flex-col justify-between py-12 px-6 border-r border-white/[0.08] text-[11px] text-slate-400">
+        <aside className="hidden xl:flex xl:col-span-2 flex-col justify-between py-10 px-8 border-r border-white/[0.08] text-[11px] text-slate-400 bg-black/60">
           {/* Top Index Label */}
           <div>
-            <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-6">
+            <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-8">
               INDEX
             </div>
 
             {/* Vertical Index List */}
-            <nav className="flex flex-col gap-3">
+            <nav className="flex flex-col gap-3.5">
               {featuredProjects.map((p, idx) => {
                 const isActive = activeProjectIndex === idx;
                 return (
                   <button
                     key={p.id}
                     onClick={() => scrollToProject(idx)}
-                    className={`text-left text-[11px] tracking-wider uppercase transition-colors cursor-pointer flex items-center gap-2 group ${
+                    className={`text-left text-[11px] tracking-wider uppercase transition-colors cursor-pointer flex items-center gap-2.5 group ${
                       isActive ? "text-white font-bold" : "text-slate-500 hover:text-slate-300"
                     }`}
                   >
@@ -88,9 +89,9 @@ export function ProjectsSection() {
           </div>
 
           {/* Scrubber Gauge Line */}
-          <div className="flex items-center gap-3 my-8">
+          <div className="flex items-center gap-3 my-auto py-12">
             <span className="text-[10px] text-slate-600">20</span>
-            <div className="h-24 w-1 bg-white/10 rounded-full relative overflow-hidden">
+            <div className="h-28 w-1 bg-white/10 rounded-full relative overflow-hidden">
               <div
                 className="w-full bg-white rounded-full transition-all duration-300"
                 style={{
@@ -118,7 +119,7 @@ export function ProjectsSection() {
         <main
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="lg:col-span-8 xl:col-span-7 flex flex-col gap-10 py-10 px-4 sm:px-8 md:px-12 max-h-[92vh] overflow-y-auto no-scrollbar border-r border-white/[0.08]"
+          className="lg:col-span-8 xl:col-span-7 flex flex-col gap-8 py-12 px-4 sm:px-8 md:px-10 h-screen overflow-y-auto no-scrollbar border-r border-white/[0.08]"
         >
           {featuredProjects.map((project, idx) => {
             const isActive = activeProjectIndex === idx;
@@ -130,41 +131,38 @@ export function ProjectsSection() {
                   projectCardsRef.current[idx] = el;
                 }}
                 onMouseEnter={() => setActiveProjectIndex(idx)}
-                className={`relative group rounded-xl border transition-all duration-300 overflow-hidden bg-[#0c0e14]/90 ${
+                className={`relative group rounded-xl border transition-all duration-300 overflow-hidden bg-[#0c0e14]/90 shrink-0 ${
                   isActive
-                    ? "border-white/30 shadow-2xl shadow-black/80"
+                    ? "border-white/25 shadow-2xl shadow-black/90"
                     : "border-white/[0.08] hover:border-white/20"
                 }`}
               >
                 {/* Outer Bracket Notch Accents */}
-                <span className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-white/40" />
-                <span className="absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-white/40" />
-                <span className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-white/40" />
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-white/40" />
+                <span className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white/40" />
+                <span className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-white/40" />
+                <span className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-white/40" />
+                <span className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white/40" />
 
-                <div className="p-5 sm:p-7 flex flex-col md:flex-row gap-6 items-start">
-                  {/* Left: Project Visual Thumbnail Frame */}
-                  <div className="w-full md:w-48 lg:w-52 h-44 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black/60 relative group/thumb flex items-center justify-center">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${project.previewGradient || "from-neutral-900 to-black"} opacity-60`} />
-                    
-                    {/* Visual Placeholder Diagram or Mockup */}
-                    <div className="relative z-10 flex flex-col items-center justify-center p-4 text-center">
-                      <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-1">
-                        PROJECT // {project.num}
-                      </div>
-                      <div className="text-sm font-bold text-slate-200 tracking-wider">
-                        {project.title}
-                      </div>
-                      <div className="mt-2 text-[10px] text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded bg-emerald-500/10">
-                        {project.techStack[0]}
-                      </div>
-                    </div>
-
-                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover/thumb:opacity-100 transition-opacity" />
+                <div className="p-5 sm:p-6 flex flex-col md:flex-row gap-5 items-center md:items-start">
+                  {/* Left: Project Visual Thumbnail Frame (Fixed Ratio like Axevia) */}
+                  <div className="w-full md:w-44 lg:w-48 h-36 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-black relative group/thumb">
+                    {project.coverImage ? (
+                      <Image
+                        src={project.coverImage}
+                        alt={project.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 200px"
+                        className="object-cover grayscale contrast-125 group-hover/thumb:grayscale-0 transition-all duration-500"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-neutral-800 to-black" />
+                    )}
+                    <div className="absolute inset-0 bg-black/20 group-hover/thumb:bg-transparent transition-colors" />
                   </div>
 
                   {/* Right: Project Metadata & Copy */}
-                  <div className="flex-1 flex flex-col justify-between h-full gap-4 w-full">
+                  <div className="flex-1 flex flex-col justify-between h-full gap-3 w-full">
                     <div>
                       {/* Meta Eyebrow */}
                       <div className="text-[10px] sm:text-[11px] text-slate-400 tracking-wider uppercase flex items-center gap-2">
@@ -174,24 +172,24 @@ export function ProjectsSection() {
                         <span className="text-slate-400">{project.year}</span>
                       </div>
 
-                      {/* Main Title */}
-                      <h3 className="text-2xl sm:text-3xl lg:text-[2rem] font-bold text-white tracking-tight uppercase mt-2 group-hover:text-blue-400 transition-colors">
+                      {/* Main Title (Clean uppercase sans typography) */}
+                      <h3 className="text-xl sm:text-2xl lg:text-[1.65rem] font-bold text-white tracking-tight uppercase font-sans mt-1.5 group-hover:text-blue-400 transition-colors">
                         {project.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-xs sm:text-[13px] text-slate-400 leading-relaxed font-sans mt-2.5 max-w-xl">
+                      <p className="text-xs sm:text-[13px] text-slate-400 leading-relaxed font-sans mt-2 max-w-xl">
                         {project.description}
                       </p>
                     </div>
 
                     {/* Bottom Tags & View Case Link */}
-                    <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-white/[0.06] mt-2">
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/[0.06] mt-1">
                       <div className="flex flex-wrap items-center gap-1.5">
                         {project.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="text-[9px] sm:text-[10px] text-slate-400 bg-white/[0.04] border border-white/[0.08] px-2.5 py-1 rounded-sm uppercase tracking-wider"
+                            className="text-[9px] text-slate-400 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-sm uppercase tracking-wider"
                           >
                             {tag}
                           </span>
@@ -216,7 +214,7 @@ export function ProjectsSection() {
         {/* ========================================================= */}
         {/* RIGHT COLUMN: BIG HUD PROJECTS STATUS & COUNTER           */}
         {/* ========================================================= */}
-        <aside className="hidden lg:flex lg:col-span-4 xl:col-span-3 flex-col justify-between py-12 px-8 text-right bg-black/40">
+        <aside className="hidden lg:flex lg:col-span-4 xl:col-span-3 flex-col justify-between py-10 px-8 text-right bg-black/60">
           {/* Top Breadcrumb */}
           <div className="text-[11px] text-slate-400 uppercase tracking-widest flex items-center justify-end gap-1.5">
             <span className="text-slate-600">HOME</span>
@@ -224,15 +222,15 @@ export function ProjectsSection() {
             <span className="text-white font-bold">PROJECTS</span>
           </div>
 
-          {/* Big Huge Typography Header */}
-          <div className="my-auto flex flex-col items-end">
-            <h2 className="text-5xl xl:text-6xl 2xl:text-7xl font-black uppercase text-white tracking-tight text-right leading-[0.9]">
+          {/* Big Huge Typography Header & HUD Counter */}
+          <div className="my-auto flex flex-col items-end w-full">
+            <h2 className="text-5xl xl:text-6xl 2xl:text-7xl font-black uppercase text-white tracking-tight text-right leading-[0.9] font-sans">
               PROJECTS
             </h2>
 
             {/* Massive Active Project Counter (e.g. 04 / 06) */}
-            <div className="flex items-baseline justify-end gap-1 mt-12 text-white">
-              <span className="text-6xl xl:text-7xl 2xl:text-8xl font-black tracking-tighter">
+            <div className="flex items-baseline justify-end gap-1 mt-10 text-white">
+              <span className="text-6xl xl:text-7xl 2xl:text-8xl font-black tracking-tighter font-sans">
                 {currentCount}
               </span>
               <span className="text-xl xl:text-2xl font-normal text-slate-500 font-mono">

@@ -11,14 +11,16 @@ export default function HomePage() {
       {/* 1. Full-screen Immersive Hero Section matching ThemeForest reference */}
       <HeroSection />
 
-      {/* 2. Navigation bar for exploring sections */}
+      {/* 2. Full-Width Axevia Projects Showcase Section */}
+      <ProjectsSection />
+
+      {/* 3. Navigation bar for exploring sections */}
       <div className="py-6">
         <Navbar />
       </div>
 
-      {/* 3. Detailed Works & Lab Playground */}
+      {/* 4. Detailed Lab Playground & Contact */}
       <main className="flex-1 flex flex-col max-w-6xl w-full mx-auto px-4 sm:px-6 pb-24 gap-12">
-        <ProjectsSection />
         <LabSection />
         <ContactSection />
       </main>
