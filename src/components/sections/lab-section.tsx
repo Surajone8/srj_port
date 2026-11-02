@@ -10,22 +10,22 @@ export function LabSection() {
   const [sliderValue, setSliderValue] = useState(65);
 
   return (
-    <section id="lab" className="flex flex-col gap-10 px-8 md:px-20 py-16">
+    <section id="lab" className="flex flex-col gap-8 sm:gap-10 px-4 sm:px-8 md:px-12 lg:px-20 py-12 sm:py-16">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/[0.08] pb-6">
         <div>
           <span className="font-mono text-xs text-purple-400 uppercase tracking-wider">
             Interaction Lab & Playground
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mt-1">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mt-1">
             Micro-interactions & Physics
           </h2>
         </div>
-        <p className="text-sm text-slate-400 max-w-md">
+        <p className="text-xs sm:text-sm text-slate-400 max-w-md">
           Tactile UI experiments exploring spring dynamics, gesture responses, and modern design engineering.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
         {/* Experiment 1: Spring Switch */}
         <Card className="bg-[#141720]">
           <CardHeader>

@@ -28,19 +28,19 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative w-full min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden px-6 md:px-12 py-6 select-none">
+    <section className="relative w-full min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden px-4 sm:px-6 md:px-12 py-5 sm:py-6 select-none">
       {/* 1. TOP HEADER / BRAND NAVIGATION */}
       <header className="relative z-30 flex items-center justify-between w-full">
         {/* Brand / Name */}
-        <div className="flex items-center gap-3">
-          <span className="font-sans text-xl md:text-2xl font-bold tracking-tight text-white">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <span className="font-sans text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-white">
             {siteConfig.name}
           </span>
-          <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+          <span className="h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
         </div>
 
         {/* Top Right Action & Audio Indicator */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <div className="hidden sm:flex items-center gap-2 font-mono text-xs text-slate-400">
             {/* Audio Waveform icon */}
             <div className="flex items-end gap-0.5 h-3">
@@ -52,18 +52,19 @@ export function HeroSection() {
             <span className="text-white font-semibold">HOME</span>
           </div>
 
-          <button
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-black hover:bg-slate-200 transition-colors cursor-pointer"
-            title="Menu & Navigation"
-            aria-label="Toggle navigation"
+          <a
+            href="#works"
+            className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-white text-black hover:bg-slate-200 transition-colors cursor-pointer"
+            title="Explore Works"
+            aria-label="Explore Works"
           >
-            <LayoutGrid className="h-5 w-5" />
-          </button>
+            <LayoutGrid className="h-4 w-4 sm:h-5 sm:w-5" />
+          </a>
         </div>
       </header>
 
       {/* 2. CENTERPIECE: INTERACTIVE WHITE CIRCLES PARTICLE PORTRAIT */}
-      <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-auto">
+      <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-auto opacity-75 sm:opacity-90 lg:opacity-100">
         <div className="w-full h-full max-w-[1300px] max-h-[880px] mx-auto">
           <ParticlePortraitCanvas
             imageSrc="/images/portrait.png"
@@ -76,26 +77,26 @@ export function HeroSection() {
       </div>
 
       {/* 3. HERO CONTENT LAYER (LEFT & RIGHT) */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center my-auto pt-10 pb-8 pointer-events-none">
+      <div className="relative z-20 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center my-auto pt-8 sm:pt-10 pb-8 pointer-events-none">
         {/* Left Column: Big Display Typography & Glass Card */}
-        <div className="lg:col-span-7 flex flex-col gap-6 pointer-events-auto">
+        <div className="lg:col-span-7 flex flex-col gap-4 sm:gap-6 pointer-events-auto text-left">
           {/* Headline */}
           <div className="flex flex-col leading-none">
-            <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[5.5rem] font-black tracking-tight uppercase font-sans text-stroke-white drop-shadow-2xl">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[5.2rem] font-black tracking-tight uppercase font-sans text-stroke-white drop-shadow-2xl">
               SOFTWARE
             </h1>
-            <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[5.5rem] font-black tracking-tight uppercase font-sans text-white mt-[-0.1em] drop-shadow-2xl">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[5.2rem] font-black tracking-tight uppercase font-sans text-white mt-[-0.08em] drop-shadow-2xl">
               DEVELOPER
             </h1>
           </div>
 
           {/* Subheading / Stack line */}
-          <div className="font-mono text-xs sm:text-sm tracking-widest text-slate-400 uppercase">
+          <div className="font-mono text-[11px] sm:text-xs md:text-sm tracking-wider sm:tracking-widest text-slate-400 uppercase">
             | REACT.JS · MERN STACK · PYTHON · MACHINE LEARNING |
           </div>
 
           {/* Frosted Glass Quote Card */}
-          <div className="glass-panel rounded-xl p-6 max-w-lg border border-white/10 shadow-2xl relative overflow-hidden group">
+          <div className="glass-panel rounded-xl p-4 sm:p-6 max-w-lg border border-white/10 shadow-2xl relative overflow-hidden group">
             {/* Top gradient highlight line */}
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <p className="font-mono text-xs sm:text-[13px] text-slate-300 leading-relaxed uppercase tracking-wide">
@@ -106,17 +107,17 @@ export function HeroSection() {
         </div>
 
         {/* Right Column: HUD Developer Stats */}
-        <div className="lg:col-span-5 flex justify-start lg:justify-end pointer-events-auto">
-          <div className="glass-panel p-6 rounded-2xl border border-white/10 shadow-2xl w-full max-w-[360px]">
+        <div className="lg:col-span-5 flex justify-start lg:justify-end pointer-events-auto w-full">
+          <div className="glass-panel p-4 sm:p-6 rounded-2xl border border-white/10 shadow-2xl w-full max-w-full sm:max-w-[360px]">
             <HudDeveloperStats />
           </div>
         </div>
       </div>
 
       {/* 4. BOTTOM TICKER / HUD FOOTER BAR */}
-      <footer className="relative z-30 flex flex-col md:flex-row items-center justify-between gap-4 pt-4 border-t border-white/[0.08] font-mono text-[11px] text-slate-400">
+      <footer className="relative z-30 flex flex-col lg:flex-row items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-white/[0.08] font-mono text-[11px] text-slate-400">
         {/* Infinite Looping Status Badges */}
-        <div className="relative overflow-hidden w-full md:max-w-xl [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+        <div className="relative overflow-hidden w-full lg:max-w-xl [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
           <div className="flex flex-row flex-nowrap w-max animate-ticker items-center gap-3 py-0.5">
             {/* Set 1 */}
             <div className="flex flex-row flex-nowrap items-center gap-3 shrink-0">
@@ -161,18 +162,18 @@ export function HeroSection() {
         </div>
 
         {/* Right Contact & Live Time */}
-        <div className="flex items-center justify-between sm:justify-end w-full md:w-auto gap-6 shrink-0">
-          <div>
-            <span className="text-slate-500 mr-2">Wanna Say Hello?</span>
+        <div className="flex flex-wrap items-center justify-between sm:justify-end w-full lg:w-auto gap-4 sm:gap-6 shrink-0">
+          <div className="text-xs">
+            <span className="text-slate-500 mr-2 hidden sm:inline">Wanna Say Hello?</span>
             <a
               href="mailto:ysuraj18333@gmail.com"
-              className="text-white font-bold hover:text-blue-400 transition-colors underline-offset-4 hover:underline"
+              className="text-white font-bold hover:text-blue-400 transition-colors underline-offset-4 hover:underline break-all"
             >
               ysuraj18333@gmail.com
             </a>
           </div>
 
-          <div className="flex items-center gap-2 text-slate-400">
+          <div className="flex items-center gap-2 text-slate-400 text-xs">
             <span className="text-slate-500">Local Time</span>
             <span className="text-white font-bold tracking-wider uppercase">
               {timeString}

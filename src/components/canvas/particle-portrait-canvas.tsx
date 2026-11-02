@@ -215,26 +215,38 @@ export function ParticlePortraitCanvas({
     [pointSpacing]
   );
 
-  // Setup canvas and load image
+  // Setup canvas and load image with responsive ResizeObserver
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
 
     let isMounted = true;
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    let loadedImg: HTMLImageElement | null = null;
 
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
+    const setupDimensionsAndParticles = () => {
+      if (!isMounted || !canvas || !container) return;
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      if (width === 0 || height === 0) return;
 
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.scale(dpr, dpr);
-    }
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.scale(dpr, dpr);
+      }
+
+      if (loadedImg && loadedImg.complete && loadedImg.naturalWidth > 0) {
+        initParticles(loadedImg, width, height);
+      } else {
+        generateProceduralParticles(width, height);
+      }
+    };
 
     if (imageSrc) {
       const img = new Image();
@@ -242,18 +254,25 @@ export function ParticlePortraitCanvas({
       img.src = imageSrc;
       img.onload = () => {
         if (!isMounted) return;
-        initParticles(img, width, height);
+        loadedImg = img;
+        setupDimensionsAndParticles();
       };
       img.onerror = () => {
         if (!isMounted) return;
-        generateProceduralParticles(width, height);
+        setupDimensionsAndParticles();
       };
     } else {
-      generateProceduralParticles(width, height);
+      setupDimensionsAndParticles();
     }
+
+    const resizeObserver = new ResizeObserver(() => {
+      setupDimensionsAndParticles();
+    });
+    resizeObserver.observe(container);
 
     return () => {
       isMounted = false;
+      resizeObserver.disconnect();
     };
   }, [imageSrc, initParticles, generateProceduralParticles]);
 
