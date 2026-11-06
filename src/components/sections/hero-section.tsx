@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ParticlePortraitCanvas } from "@/components/canvas/particle-portrait-canvas";
 import { HudDeveloperStats } from "@/components/sections/hud-developer-stats";
 import { siteConfig } from "@/config/site";
@@ -9,6 +9,76 @@ import { LayoutGrid } from "lucide-react";
 
 export function HeroSection() {
   const [timeString, setTimeString] = useState("12:00 a.m.");
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const leftRef = useRef<HTMLDivElement | null>(null);
+  const rightRef = useRef<HTMLDivElement | null>(null);
+  const gatherRef = useRef(0);
+
+  // Scroll-driven transition: text exits left/right while particles gather into a ball
+  useEffect(() => {
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const wrapper = wrapperRef.current;
+      if (!wrapper) return;
+      const rect = wrapper.getBoundingClientRect();
+      const scrollable = wrapper.offsetHeight - window.innerHeight;
+      const raw = scrollable > 0 ? -rect.top / scrollable : 0;
+      // Stages: 0 portrait, 1 globe, 2 India, 3 Goa. Flat spans are holds so each
+      // map stays on screen for a moment before the next transition starts.
+      const keys: [number, number][] = [
+        [0, 0],
+        [0.2, 1],
+        [0.32, 1],
+        [0.52, 2],
+        [0.64, 2],
+        [0.84, 3],
+        [1, 3],
+      ];
+      const r = Math.min(1, Math.max(0, raw));
+      let stage = 3;
+      for (let k = 1; k < keys.length; k++) {
+        if (r <= keys[k][0]) {
+          const [r0, s0] = keys[k - 1];
+          const [r1, s1] = keys[k];
+          stage = s0 + ((r - r0) / (r1 - r0)) * (s1 - s0);
+          break;
+        }
+      }
+      gatherRef.current = stage;
+      const progress = Math.min(1, stage);
+
+      // Text leaves a little faster than the particles gather
+      const t = Math.min(1, progress * 1.6);
+      const eased = t * t * (3 - 2 * t);
+      const opacity = String(1 - eased);
+      const pe = eased > 0.6 ? "none" : "";
+      if (leftRef.current) {
+        leftRef.current.style.transform = `translate3d(${-eased * 120}vw, 0, 0)`;
+        leftRef.current.style.opacity = opacity;
+        leftRef.current.style.pointerEvents = pe;
+      }
+      if (rightRef.current) {
+        rightRef.current.style.transform = `translate3d(${eased * 120}vw, 0, 0)`;
+        rightRef.current.style.opacity = opacity;
+        rightRef.current.style.pointerEvents = pe;
+      }
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
 
   useEffect(() => {
     const updateTime = () => {
@@ -28,7 +98,8 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative w-full min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden px-4 sm:px-6 md:px-12 py-5 sm:py-6 select-none">
+    <div ref={wrapperRef} className="relative w-full h-[700vh] bg-black">
+    <section className="sticky top-0 w-full min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden px-4 sm:px-6 md:px-12 py-5 sm:py-6 select-none">
       {/* 1. TOP HEADER / BRAND NAVIGATION */}
       <header className="relative z-30 flex items-center justify-between w-full">
         {/* Brand / Name */}
@@ -71,6 +142,10 @@ export function HeroSection() {
             pointSpacing={6}
             mouseRadius={140}
             pushStrength={10}
+            gatherRef={gatherRef}
+            globeSrc="/images/world.jpg"
+            indiaSrc="/images/India.jpg"
+            goaSrc="/images/Goa.png"
             className="w-full h-full"
           />
         </div>
@@ -79,7 +154,7 @@ export function HeroSection() {
       {/* 3. HERO CONTENT LAYER (LEFT & RIGHT) */}
       <div className="relative z-20 w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center my-auto pt-8 sm:pt-10 pb-8 pointer-events-none">
         {/* Left Column: Big Display Typography & Glass Card */}
-        <div className="lg:col-span-7 flex flex-col gap-4 sm:gap-6 pointer-events-auto text-left">
+        <div ref={leftRef} className="lg:col-span-7 flex flex-col gap-4 sm:gap-6 pointer-events-auto text-left will-change-transform">
           {/* Headline */}
           <div className="flex flex-col leading-none">
             <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[5.2rem] font-black tracking-tight uppercase font-sans text-stroke-white drop-shadow-2xl">
@@ -107,7 +182,7 @@ export function HeroSection() {
         </div>
 
         {/* Right Column: HUD Developer Stats */}
-        <div className="lg:col-span-5 flex justify-start lg:justify-end pointer-events-auto w-full">
+        <div ref={rightRef} className="lg:col-span-5 flex justify-start lg:justify-end pointer-events-auto w-full will-change-transform">
           <div className="glass-panel p-4 sm:p-6 rounded-2xl border border-white/10 shadow-2xl w-full max-w-full sm:max-w-[360px]">
             <HudDeveloperStats />
           </div>
@@ -182,5 +257,6 @@ export function HeroSection() {
         </div>
       </footer>
     </section>
+    </div>
   );
 }
