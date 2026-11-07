@@ -17,34 +17,36 @@ export function HeroSection() {
   // Scroll-driven transition: text exits left/right while particles gather into a ball
   useEffect(() => {
     let frame = 0;
+    let target = 0; // discrete stage chosen by scroll thresholds
+    let stage = 0; // animated stage, advances over time toward `target`
+    let last = performance.now();
+    const STAGES_PER_SECOND = 1.4; // speed of each particle transition
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const update = () => {
-      frame = 0;
+    // Scroll progress (0..1) at which each stage is triggered:
+    // 0 portrait, 1 globe, 2 India, 3 Goa. Crossing a threshold plays the full transition.
+    const THRESHOLDS = [0.05, 0.3, 0.55];
+
+    const readTarget = () => {
       const wrapper = wrapperRef.current;
       if (!wrapper) return;
       const rect = wrapper.getBoundingClientRect();
       const scrollable = wrapper.offsetHeight - window.innerHeight;
       const raw = scrollable > 0 ? -rect.top / scrollable : 0;
-      // Stages: 0 portrait, 1 globe, 2 India, 3 Goa. Flat spans are holds so each
-      // map stays on screen for a moment before the next transition starts.
-      const keys: [number, number][] = [
-        [0, 0],
-        [0.2, 1],
-        [0.32, 1],
-        [0.52, 2],
-        [0.64, 2],
-        [0.84, 3],
-        [1, 3],
-      ];
       const r = Math.min(1, Math.max(0, raw));
-      let stage = 3;
-      for (let k = 1; k < keys.length; k++) {
-        if (r <= keys[k][0]) {
-          const [r0, s0] = keys[k - 1];
-          const [r1, s1] = keys[k];
-          stage = s0 + ((r - r0) / (r1 - r0)) * (s1 - s0);
-          break;
-        }
+      let t = 0;
+      for (let k = 0; k < THRESHOLDS.length; k++) if (r >= THRESHOLDS[k]) t = k + 1;
+      target = t;
+    };
+
+    const update = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (stage !== target) {
+        const step = STAGES_PER_SECOND * dt;
+        stage = reduceMotion || Math.abs(target - stage) <= step
+          ? target
+          : stage + Math.sign(target - stage) * step;
       }
       gatherRef.current = stage;
       const progress = Math.min(1, stage);
@@ -66,17 +68,20 @@ export function HeroSection() {
       }
     };
 
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(update);
+    const loop = (now: number) => {
+      update(now);
+      frame = requestAnimationFrame(loop);
     };
 
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    readTarget();
+    stage = target;
+    frame = requestAnimationFrame(loop);
+    window.addEventListener("scroll", readTarget, { passive: true });
+    window.addEventListener("resize", readTarget);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", readTarget);
+      window.removeEventListener("resize", readTarget);
+      cancelAnimationFrame(frame);
     };
   }, []);
 
@@ -98,7 +103,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <div ref={wrapperRef} className="relative w-full h-[700vh] bg-black">
+    <div ref={wrapperRef} className="relative w-full h-[400vh] bg-black">
     <section className="sticky top-0 w-full min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden px-4 sm:px-6 md:px-12 py-5 sm:py-6 select-none">
       {/* 1. TOP HEADER / BRAND NAVIGATION */}
       <header className="relative z-30 flex items-center justify-between w-full">
